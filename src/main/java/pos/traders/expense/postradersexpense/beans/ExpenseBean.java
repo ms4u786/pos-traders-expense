@@ -28,7 +28,7 @@ public class ExpenseBean {
     @Column(name = "expense_time")
     Time expenseTime;
 
-    @Column(name = "expense_amount", columnDefinition="Decimal(10,2) default '0.00'")
+    @Column(name = "expense_amount", columnDefinition="Decimal(10,2) default 0.00")
     Double expenseAmount;
 
     @Column(name = "comments", nullable = true)

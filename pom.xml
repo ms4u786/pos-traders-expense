@@ -67,6 +67,11 @@
             <version>3.1.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
