@@ -2,6 +2,7 @@ package pos.traders.expense.postradersexpense.beans;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -13,7 +14,8 @@ import java.util.Date;
 public class ExpenseCategoryBean {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy= GenerationType.AUTO,generator="native")
+    @GenericGenerator(name = "native",strategy = "native")
     @Column(name = "expense_category_id", nullable = false)
     Integer expenseCategoryId;
 

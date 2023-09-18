@@ -20,21 +20,6 @@ import java.net.URI;
 public class ExpenseController {
 
     @Autowired
-    ModelMapper modelMapper;
-
-    @Autowired
-    ExpenseRepo expenseRepo;
-
-    @Autowired
-    ServiceResponseDto serviceResponseDto;
-
-    @Autowired
-    ExpenseCategoryRepo expenseCategoryRepo;
-
-    @Autowired
-    MessageSource messageSource;
-
-    @Autowired
     ExpenseService expenseService;
 
     @PostMapping("/save")
