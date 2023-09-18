@@ -5,6 +5,7 @@ public enum ExpenseServiceResponseCode {
     SUCCESS("SU", "Success"),
     FAIL("FA", "Fail"),
     ERROR("ER", "Error"),
+    NoRecord("NR", "NO Record Found!"),
     InValid("IV", "Invalid Request!");
 
     private final String code;

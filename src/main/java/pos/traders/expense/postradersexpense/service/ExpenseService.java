@@ -1,11 +1,15 @@
 package pos.traders.expense.postradersexpense.service;
 
-import org.springframework.stereotype.Service;
+import pos.traders.expense.postradersexpense.dto.ExpenseDto;
+import pos.traders.expense.postradersexpense.dto.ServiceResponseDto;
 
-@Service
-public class ExpenseService {
+public interface ExpenseService {
 
-
-
+    ServiceResponseDto saveExpense(ExpenseDto model);
+    ServiceResponseDto getExpensesCurrentMonth();
+    ServiceResponseDto getExpensesBetweenDate(String startDate, String endDate, String expenseCategory);
+    ServiceResponseDto getExpenseById(Integer expenseId);
+    ServiceResponseDto getExpenseByCategoryId(Integer categoryId);
+    ServiceResponseDto deleteExpenseById(Integer expenseId);
 
 }
