@@ -2,12 +2,15 @@ package pos.traders.expense.postradersexpense.controller;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pos.traders.expense.postradersexpense.beans.ExpenseCategoryBean;
 import pos.traders.expense.postradersexpense.dto.ExpenseCategoryDto;
 import pos.traders.expense.postradersexpense.dto.ServiceResponseDto;
 import pos.traders.expense.postradersexpense.repo.ExpenseCategoryRepo;
+import pos.traders.expense.postradersexpense.util.ExpenseServiceResponseCode;
 
 import java.net.URI;
 import java.util.Date;
@@ -29,6 +32,9 @@ public class ExpenseCategoryController {
     @Autowired
     ExpenseCategoryRepo expenseCategoryRepo;
 
+    @Autowired
+    MessageSource messageSource;
+
     @PostMapping("/new")
     public ResponseEntity<?> newExpenseCategory(@RequestBody ExpenseCategoryDto model){
 
@@ -37,24 +43,26 @@ public class ExpenseCategoryController {
         Optional<ExpenseCategoryBean> expenseCategory = expenseCategoryRepo.findByExpenseCategoryTitle(categoryBeanRequest.getExpenseCategoryTitle());
         if(expenseCategory.isPresent()){
             serviceResponseDto.setResponseCode("0A");
-            serviceResponseDto.setResponseDesc("Expense category already added!");
+            serviceResponseDto.setResponseDesc(messageSource.getMessage("expense.category.already.add", null, LocaleContextHolder.getLocale()));
             serviceResponseDto.setPayload(null);
             return ResponseEntity.ok().body(serviceResponseDto);
         }
+
         categoryBeanRequest.setCreatedAt(new Date());
         ExpenseCategoryBean expenseCategoryNew = expenseCategoryRepo.save(categoryBeanRequest);
-        if(!Objects.isNull(expenseCategoryNew) && expenseCategoryNew.getExpenseCategoryId() > 0){
-            URI expenseCategoryUri = URI.create("/id/" + expenseCategoryNew.getExpenseCategoryId());
-            ExpenseCategoryDto categoryDtoResponse = modelMapper.map(expenseCategoryNew, ExpenseCategoryDto.class);
-            serviceResponseDto.setResponseCode("00");
-            serviceResponseDto.setResponseDesc("SUCCESS");
-            serviceResponseDto.setPayload(categoryDtoResponse);
-            return ResponseEntity.created(expenseCategoryUri).body(serviceResponseDto);
+        if(Objects.isNull(expenseCategoryNew) || expenseCategoryNew.getExpenseCategoryId() <= 0){
+            serviceResponseDto.setResponseCode(ExpenseServiceResponseCode.ERROR.getCode());
+            serviceResponseDto.setResponseDesc(messageSource.getMessage("operation.error.desc", null, LocaleContextHolder.getLocale()));
+            serviceResponseDto.setPayload(null);
+            return ResponseEntity.ok().body(serviceResponseDto);
         }
 
-        serviceResponseDto.setResponseCode("0E");
-        serviceResponseDto.setResponseDesc("ERROR");
-        return ResponseEntity.ok().body(serviceResponseDto);
+        URI expenseCategoryUri = URI.create("/id/" + expenseCategoryNew.getExpenseCategoryId());
+        ExpenseCategoryDto categoryDtoResponse = modelMapper.map(expenseCategoryNew, ExpenseCategoryDto.class);
+        serviceResponseDto.setResponseCode(ExpenseServiceResponseCode.SUCCESS.getCode());
+        serviceResponseDto.setResponseDesc(messageSource.getMessage("operation.success.desc", null, LocaleContextHolder.getLocale()));
+        serviceResponseDto.setPayload(categoryDtoResponse);
+        return ResponseEntity.created(expenseCategoryUri).body(serviceResponseDto);
     }
 
     @PostMapping("/update")
@@ -64,41 +72,44 @@ public class ExpenseCategoryController {
 
         Optional<ExpenseCategoryBean> expenseCategory = expenseCategoryRepo.findById(categoryBeanRequest.getExpenseCategoryId());
         if(!expenseCategory.isPresent()){
-            serviceResponseDto.setResponseCode("0I");
-            serviceResponseDto.setResponseDesc("Expense category ID is invalid!");
+            serviceResponseDto.setResponseCode(ExpenseServiceResponseCode.InValid.getCode());
+            serviceResponseDto.setPayload(null);
+            serviceResponseDto.setResponseDesc(messageSource.getMessage("expense.category.id.invalid", null, LocaleContextHolder.getLocale()));
+            return ResponseEntity.ok().body(serviceResponseDto);
+        }
+
+        categoryBeanRequest.setLastUpdatedAt(new Date());
+        ExpenseCategoryBean expenseCategoryUpdated = expenseCategoryRepo.save(categoryBeanRequest);
+        if(Objects.isNull(expenseCategoryUpdated)){
+            serviceResponseDto.setResponseCode(ExpenseServiceResponseCode.ERROR.getCode());
+            serviceResponseDto.setResponseDesc(messageSource.getMessage("operation.error.desc", null, LocaleContextHolder.getLocale()));
             serviceResponseDto.setPayload(null);
             return ResponseEntity.ok().body(serviceResponseDto);
         }
-        categoryBeanRequest.setLastUpdatedAt(new Date());
-        ExpenseCategoryBean expenseCategoryUpdated = expenseCategoryRepo.save(categoryBeanRequest);
-        if(!Objects.isNull(expenseCategoryUpdated)){
-            ExpenseCategoryDto categoryDtoResponse = modelMapper.map(expenseCategoryUpdated, ExpenseCategoryDto.class);
-            URI expenseCategoryUri = URI.create("/id/" + expenseCategoryUpdated.getExpenseCategoryId());
-            serviceResponseDto.setResponseCode("00");
-            serviceResponseDto.setResponseDesc("SUCCESS");
-            serviceResponseDto.setPayload(categoryDtoResponse);
-            return ResponseEntity.created(expenseCategoryUri).body(serviceResponseDto);
-        }
 
-        serviceResponseDto.setResponseCode("0E");
-        serviceResponseDto.setResponseDesc("ERROR");
-        serviceResponseDto.setPayload(null);
-        return ResponseEntity.ok().body(serviceResponseDto);
+        ExpenseCategoryDto categoryDtoResponse = modelMapper.map(expenseCategoryUpdated, ExpenseCategoryDto.class);
+        URI expenseCategoryUri = URI.create("/id/" + expenseCategoryUpdated.getExpenseCategoryId());
+        serviceResponseDto.setResponseCode(ExpenseServiceResponseCode.SUCCESS.getCode());
+        serviceResponseDto.setResponseDesc(messageSource.getMessage("operation.success.desc", null, LocaleContextHolder.getLocale()));
+        serviceResponseDto.setPayload(categoryDtoResponse);
+        return ResponseEntity.created(expenseCategoryUri).body(serviceResponseDto);
     }
 
     @GetMapping("/id/{id}")
     public ResponseEntity<?> expenseCategoryById(@PathVariable("id") Integer expenseCategoryId){
         Optional<ExpenseCategoryBean> expenseCategoryOpt = expenseCategoryRepo.findById(expenseCategoryId);
-        if(expenseCategoryOpt.isPresent()){
-            ExpenseCategoryDto categoryDtoResponse = modelMapper.map(expenseCategoryOpt.get(), ExpenseCategoryDto.class);
-            serviceResponseDto.setResponseCode("00");
-            serviceResponseDto.setResponseDesc("SUCCESS");
-            serviceResponseDto.setPayload(categoryDtoResponse);
+
+        if(!expenseCategoryOpt.isPresent()){
+            serviceResponseDto.setResponseCode(ExpenseServiceResponseCode.InValid.getCode());
+            serviceResponseDto.setResponseDesc(messageSource.getMessage("expense.category.id.invalid", null, LocaleContextHolder.getLocale()));
+            serviceResponseDto.setPayload(null);
             return ResponseEntity.ok().body(serviceResponseDto);
         }
-        serviceResponseDto.setResponseCode("0I");
-        serviceResponseDto.setResponseDesc("Expense category ID is invalid!");
-        serviceResponseDto.setPayload(null);
+
+        ExpenseCategoryDto categoryDtoResponse = modelMapper.map(expenseCategoryOpt.get(), ExpenseCategoryDto.class);
+        serviceResponseDto.setResponseCode(ExpenseServiceResponseCode.SUCCESS.getCode());
+        serviceResponseDto.setResponseDesc(messageSource.getMessage("operation.success.desc", null, LocaleContextHolder.getLocale()));
+        serviceResponseDto.setPayload(categoryDtoResponse);
         return ResponseEntity.ok().body(serviceResponseDto);
     }
 
@@ -109,7 +120,7 @@ public class ExpenseCategoryController {
         List<ExpenseCategoryBean> expenseCategoryList = expenseCategoryRepo.findAll();
         if(Objects.isNull(expenseCategoryList) || expenseCategoryList.size() < 1) {
             serviceResponseDto.setResponseCode("0N");
-            serviceResponseDto.setResponseDesc("Expense categories not defined!");
+            serviceResponseDto.setResponseDesc(messageSource.getMessage("expense.category.not.defined", null, LocaleContextHolder.getLocale()));
             serviceResponseDto.setPayload(null);
             return ResponseEntity.ok().body(serviceResponseDto);
         }
@@ -117,8 +128,8 @@ public class ExpenseCategoryController {
         List<ExpenseCategoryDto> expenseCategoryDtoList = expenseCategoryList.stream()
                 .map(user -> modelMapper.map(user, ExpenseCategoryDto.class))
                 .collect(Collectors.toList());
-        serviceResponseDto.setResponseCode("00");
-        serviceResponseDto.setResponseDesc("Success");
+        serviceResponseDto.setResponseCode(ExpenseServiceResponseCode.SUCCESS.getCode());
+        serviceResponseDto.setResponseDesc(messageSource.getMessage("operation.success.desc", null, LocaleContextHolder.getLocale()));
         serviceResponseDto.setPayload(expenseCategoryDtoList);
         return ResponseEntity.ok().body(serviceResponseDto);
     }

@@ -1,0 +1,25 @@
+package pos.traders.expense.postradersexpense.util;
+
+public enum ExpenseServiceResponseCode {
+
+    SUCCESS("SU", "Success"),
+    FAIL("FA", "Fail"),
+    ERROR("ER", "Error"),
+    InValid("IV", "Invalid Request!");
+
+    private final String code;
+    private final String description;
+
+    ExpenseServiceResponseCode(String code, String description) {
+        this.code = code;
+        this.description = description;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+}
