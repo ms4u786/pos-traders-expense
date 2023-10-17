@@ -4,8 +4,8 @@ package com.msm.service.expense.core.service;
 import com.msm.service.expense.common.dto.ExpenseDto;
 import com.msm.service.expense.common.dto.ServiceResponseDto;
 import com.msm.service.expense.common.util.ExpenseServiceResponseCode;
-import com.msm.service.expense.core.entity.ExpenseBean;
-import com.msm.service.expense.core.entity.ExpenseCategoryBean;
+import com.msm.service.expense.core.entity.ExpenseEntity;
+import com.msm.service.expense.core.entity.ExpenseCategoryEntity;
 import com.msm.service.expense.core.repo.ExpenseCategoryRepo;
 import com.msm.service.expense.core.repo.ExpenseRepo;
 import org.modelmapper.ModelMapper;
@@ -42,16 +42,16 @@ public class ExpenseServiceImpl implements ExpenseService {
     @Override
     public ServiceResponseDto saveExpense(ExpenseDto model) {
 
-        ExpenseBean expenseRequest = modelMapper.map(model, ExpenseBean.class);
+        ExpenseEntity expenseRequest = modelMapper.map(model, ExpenseEntity.class);
 
-        if(Objects.isNull(expenseRequest.getExpenseCategoryBean())){
+        if(Objects.isNull(expenseRequest.getExpenseCategoryEntity())){
             serviceResponseDto.setPayload(null);
             serviceResponseDto.setResponseCode(ExpenseServiceResponseCode.InValid.getCode());
             serviceResponseDto.setResponseDesc(messageSource.getMessage("expense.category.id.invalid", null, LocaleContextHolder.getLocale()));
             return serviceResponseDto;
         }
 
-        Optional<ExpenseCategoryBean> expenseCategory = expenseCategoryRepo.findById(expenseRequest.getExpenseCategoryBean().getExpenseCategoryId());
+        Optional<ExpenseCategoryEntity> expenseCategory = expenseCategoryRepo.findById(expenseRequest.getExpenseCategoryEntity().getExpenseCategoryId());
         if(!expenseCategory.isPresent()){
             serviceResponseDto.setResponseDesc(messageSource.getMessage("expense.category.id.invalid", null, LocaleContextHolder.getLocale()));
             serviceResponseDto.setPayload(null);
@@ -61,7 +61,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
         expenseRequest.setCreatedAt(new Date());
         if(null != expenseRequest.getExpenseId() && expenseRequest.getExpenseId() >= 0){
-            Optional<ExpenseBean> selectedExpenseOpt = expenseRepo.findById(expenseRequest.getExpenseId());
+            Optional<ExpenseEntity> selectedExpenseOpt = expenseRepo.findById(expenseRequest.getExpenseId());
             if(selectedExpenseOpt.isPresent()){
                 expenseRequest.setCreatedAt(selectedExpenseOpt.get().getCreatedAt());
                 expenseRequest.setLastUpdatedAt(new Date());
@@ -72,9 +72,9 @@ public class ExpenseServiceImpl implements ExpenseService {
                 return serviceResponseDto;
             }
         }
-        expenseRequest.setExpenseCategoryBean(expenseCategory.get());
+        expenseRequest.setExpenseCategoryEntity(expenseCategory.get());
 
-        ExpenseBean expenseNew = expenseRepo.save(expenseRequest);
+        ExpenseEntity expenseNew = expenseRepo.save(expenseRequest);
         if(!Objects.isNull(expenseNew) && expenseNew.getExpenseId() > 0){
             ExpenseDto expenseDtoResponse = modelMapper.map(expenseNew, ExpenseDto.class);
 
@@ -97,7 +97,7 @@ public class ExpenseServiceImpl implements ExpenseService {
         Date dateStart = Date.from(localDate.withDayOfMonth(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
         Date dateEnd = Date.from(localDate.withDayOfMonth(localDate.lengthOfMonth()).atStartOfDay(ZoneId.systemDefault()).toInstant());
 
-        Optional<List<ExpenseBean>> expenseOpt = expenseRepo.findByExpenseDateBetweenOrderByExpenseDateDesc(dateStart, dateEnd);
+        Optional<List<ExpenseEntity>> expenseOpt = expenseRepo.findByExpenseDateBetweenOrderByExpenseDateDesc(dateStart, dateEnd);
 
         if(!expenseOpt.isPresent()){
             serviceResponseDto.setResponseCode(ExpenseServiceResponseCode.NoRecord.getCode());
@@ -130,15 +130,15 @@ public class ExpenseServiceImpl implements ExpenseService {
             dateEnd = Date.from(localDate.withDayOfMonth(localDate.lengthOfMonth()).atStartOfDay(ZoneId.systemDefault()).toInstant());
         }
 
-        Optional<List<ExpenseBean>> expensesOpt = null;
+        Optional<List<ExpenseEntity>> expensesOpt = null;
 
         if(!Objects.isNull(expenseCategory) && !ObjectUtils.isEmpty(expenseCategory)){
             List<String> categoriesStringList = Arrays.asList(expenseCategory.split("\\s*,\\s*"));
             List<Integer> categoriesList = categoriesStringList.stream().map(Integer::parseInt).collect(Collectors.toList());
             Iterable<Integer> iterable = (Iterable<Integer>)categoriesList;
-            List<ExpenseCategoryBean> expenseCategoryBeansOpt = expenseCategoryRepo.findAllById(iterable);
+            List<ExpenseCategoryEntity> expenseCategoryBeansOpt = expenseCategoryRepo.findAllById(iterable);
             if(!Objects.isNull(expenseCategoryBeansOpt) && !ObjectUtils.isEmpty(expenseCategoryBeansOpt)){
-                expensesOpt = expenseRepo.findByExpenseDateBetweenAndExpenseCategoryBeanInOrderByExpenseDateDesc(dateStart, dateEnd, expenseCategoryBeansOpt);
+                expensesOpt = expenseRepo.findByExpenseDateBetweenAndExpenseCategoryEntityInOrderByExpenseDateDesc(dateStart, dateEnd, expenseCategoryBeansOpt);
             } else {
                 expensesOpt = expenseRepo.findByExpenseDateBetweenOrderByExpenseDateDesc(dateStart, dateEnd);
             }
@@ -165,7 +165,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     @Override
     public ServiceResponseDto getExpenseById(Integer expenseId) {
 
-        Optional<ExpenseBean> expenseOpt = expenseRepo.findById(expenseId);
+        Optional<ExpenseEntity> expenseOpt = expenseRepo.findById(expenseId);
         if(!expenseOpt.isPresent()){
             serviceResponseDto.setPayload(null);
             serviceResponseDto.setResponseCode(ExpenseServiceResponseCode.NoRecord.getCode());
@@ -180,7 +180,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     @Override
     public ServiceResponseDto getExpenseByCategoryId(Integer categoryId) {
-        Optional<ExpenseCategoryBean> expensesByCategoryOpt = expenseCategoryRepo.findById(categoryId);
+        Optional<ExpenseCategoryEntity> expensesByCategoryOpt = expenseCategoryRepo.findById(categoryId);
         if(!expensesByCategoryOpt.isPresent()){
             serviceResponseDto.setResponseCode(ExpenseServiceResponseCode.InValid.getCode());
             serviceResponseDto.setPayload(null);
@@ -188,7 +188,7 @@ public class ExpenseServiceImpl implements ExpenseService {
             return serviceResponseDto;
         }
 
-        Optional<List<ExpenseBean>> expenseByCategoryListOpt = expenseRepo.findByExpenseCategoryBeanOrderByExpenseDateDesc(expensesByCategoryOpt.get());
+        Optional<List<ExpenseEntity>> expenseByCategoryListOpt = expenseRepo.findByExpenseCategoryEntityOrderByExpenseDateDesc(expensesByCategoryOpt.get());
         if(!expenseByCategoryListOpt.isPresent()){
             serviceResponseDto.setResponseDesc(messageSource.getMessage("expense.no.resource", null, LocaleContextHolder.getLocale()));
             serviceResponseDto.setResponseCode(ExpenseServiceResponseCode.NoRecord.getCode());
@@ -208,7 +208,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     @Override
     public ServiceResponseDto deleteExpenseById(Integer expenseId) {
 
-        Optional<ExpenseBean> expenseOpt = expenseRepo.findById(expenseId);
+        Optional<ExpenseEntity> expenseOpt = expenseRepo.findById(expenseId);
         if(!expenseOpt.isPresent()){
             serviceResponseDto.setResponseCode(ExpenseServiceResponseCode.InValid.getCode());
             serviceResponseDto.setResponseDesc(messageSource.getMessage("expense.id.invalid", null, LocaleContextHolder.getLocale()));

@@ -1,10 +1,10 @@
 package com.msm.service.expense.core.factory;
 
 
-import com.msm.service.expense.core.entity.ExpenseCategoryBean;
+import com.msm.service.expense.core.entity.ExpenseCategoryEntity;
 
 public interface ExpenseFactory {
 
-    Expense createExpense(ExpenseCategoryBean expenseCategoryBean, Double expenseAmount);
+    Expense createExpense(ExpenseCategoryEntity expenseCategoryEntity, Double expenseAmount);
 
 }

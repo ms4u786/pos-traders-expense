@@ -2,7 +2,7 @@ package com.msm.service.expense.scheduler.scheduled;
 
 
 import com.msm.service.expense.core.factory.PostExpenseFactory;
-import com.msm.service.expense.core.entity.ExpenseBean;
+import com.msm.service.expense.core.entity.ExpenseEntity;
 import com.msm.service.expense.core.repo.ExpenseRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -23,7 +23,7 @@ public class LogTodayExpensesJob {
 
         System.out.println("Job 'LogTodayExpensesJob' initiated!");
 
-        Optional<List<ExpenseBean>> expensesListOpt = expenseRepo.fetchScheduledOneTimeExpensesForToday();
+        Optional<List<ExpenseEntity>> expensesListOpt = expenseRepo.fetchScheduledOneTimeExpensesForToday();
 
         if(expensesListOpt.isPresent()){
 
@@ -32,7 +32,7 @@ public class LogTodayExpensesJob {
 
                     expenseBean -> {
 
-                        ExpenseBean newExpenseBean = new PostExpenseFactory().createExpense(expenseBean.getExpenseCategoryBean(), expenseBean.getExpenseAmount()).create();
+                        ExpenseEntity newExpenseBean = new PostExpenseFactory().createExpense(expenseBean.getExpenseCategoryEntity(), expenseBean.getExpenseAmount()).create();
                         expenseRepo.save(newExpenseBean);
 
                     }

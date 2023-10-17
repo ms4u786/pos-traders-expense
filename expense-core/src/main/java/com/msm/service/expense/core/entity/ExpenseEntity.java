@@ -10,7 +10,7 @@ import java.util.Date;
 @Entity
 @Table(name = "expenses")
 @Data
-public class ExpenseBean {
+public class ExpenseEntity {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO,generator="native")
@@ -20,7 +20,7 @@ public class ExpenseBean {
 
     @ManyToOne
     @JoinColumn(name="expense_category_id", nullable=false)
-    ExpenseCategoryBean expenseCategoryBean;
+    ExpenseCategoryEntity expenseCategoryEntity;
 
     @Column(name = "expense_date")
     Date expenseDate;
@@ -72,13 +72,13 @@ public class ExpenseBean {
     @Column(name = "last_updated_at")
     Date lastUpdatedAt;
 
-    public ExpenseBean(){
+    public ExpenseEntity(){
 
     }
 
-    public ExpenseBean(ExpenseBuilder builder){
+    public ExpenseEntity(ExpenseBuilder builder){
 
-        this.expenseCategoryBean = builder.expenseCategoryBean;
+        this.expenseCategoryEntity = builder.expenseCategoryEntity;
         this.expenseDate = builder.expenseDate;
         this.expenseTime = builder.expenseTime;
         this.expenseAmount = builder.expenseAmount;
@@ -99,7 +99,7 @@ public class ExpenseBean {
 
     public static class ExpenseBuilder{
 
-        ExpenseCategoryBean expenseCategoryBean;
+        ExpenseCategoryEntity expenseCategoryEntity;
         Date expenseDate;
         Time expenseTime;
         Double expenseAmount;
@@ -116,9 +116,9 @@ public class ExpenseBean {
         Date createdAt;
         Date lastUpdatedAt;
 
-        public ExpenseBuilder(Date expenseDate, ExpenseCategoryBean expenseCategoryBean, Double expenseAmount){
+        public ExpenseBuilder(Date expenseDate, ExpenseCategoryEntity expenseCategoryEntity, Double expenseAmount){
             this.expenseDate = expenseDate;
-            this.expenseCategoryBean = expenseCategoryBean;
+            this.expenseCategoryEntity = expenseCategoryEntity;
             this.expenseAmount = expenseAmount;
         }
 
@@ -187,8 +187,8 @@ public class ExpenseBean {
             return this;
         }
 
-        public ExpenseBean build(){
-            return new ExpenseBean(this);
+        public ExpenseEntity build(){
+            return new ExpenseEntity(this);
         }
 
     }

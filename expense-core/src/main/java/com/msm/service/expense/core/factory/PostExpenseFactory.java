@@ -1,12 +1,12 @@
 package com.msm.service.expense.core.factory;
 
 
-import com.msm.service.expense.core.entity.ExpenseCategoryBean;
+import com.msm.service.expense.core.entity.ExpenseCategoryEntity;
 
 public class PostExpenseFactory implements ExpenseFactory {
 
     @Override
-    public Expense createExpense(ExpenseCategoryBean expenseCategoryBean, Double expenseAmount) {
-        return new PostExpense(expenseCategoryBean, expenseAmount);
+    public Expense createExpense(ExpenseCategoryEntity expenseCategoryEntity, Double expenseAmount) {
+        return new PostExpense(expenseCategoryEntity, expenseAmount);
     }
 }

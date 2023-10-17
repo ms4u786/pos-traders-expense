@@ -11,7 +11,7 @@ import java.util.Date;
 @Table(name = "expense_categories")
 @Getter
 @Setter
-public class ExpenseCategoryBean {
+public class ExpenseCategoryEntity {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO,generator="native")

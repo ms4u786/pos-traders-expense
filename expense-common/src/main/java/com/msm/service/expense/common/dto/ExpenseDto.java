@@ -11,7 +11,7 @@ import java.util.Date;
 public class ExpenseDto {
 
     Integer expenseId;
-    ExpenseCategoryDto expenseCategoryBean;
+    ExpenseCategoryDto expenseCategoryEntity;
     Date expenseDate;
     Time expenseTime;
     Double expenseAmount;
