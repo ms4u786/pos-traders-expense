@@ -2,20 +2,23 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>com.msm.sevice.expense</groupId>
         <artifactId>msm-sevice-expense</artifactId>
         <version>0.0.1-SNAPSHOT</version>
-        <relativePath/> <!-- lookup parent from repository -->
     </parent>
+
     <groupId>com.msm.service.expense</groupId>
     <artifactId>expense-scheduler</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>expense-scheduler</name>
     <description>expense-scheduler</description>
+
     <properties>
         <java.version>11</java.version>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.msm.service.expense</groupId>
@@ -35,7 +38,6 @@
             <version>0.0.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
-
     </dependencies>
 
     <build>
