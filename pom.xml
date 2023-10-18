@@ -7,6 +7,8 @@
         <module>expense-core</module>
         <module>expense-common</module>
         <module>expense-client</module>
+        <module>expense-api</module>
+        <module>expense-scheduler</module>
     </modules>
 
     <parent>
@@ -128,8 +130,8 @@
             <properties>
                 <profile.name>production</profile.name>
                 <!--<spring.datasource.url>jdbc:mysql://127.0.0.1:3306/mdbexpense?autoReconnect=true&useSSL=false&useTimezone=true&serverTimezone=UTC</spring.datasource.url>-->
-                <spring.datasource.username>sp-service-db</spring.datasource.username>
-                <spring.datasource.password>HFGF/S5#}gj6v;Mr</spring.datasource.password>
+                <spring.datasource.username></spring.datasource.username>
+                <spring.datasource.password></spring.datasource.password>
                 <spring.datasource.driver-class-name>com.mysql.cj.jdbc.Driver</spring.datasource.driver-class-name>
                 <spring.jpa.properties.hibernate.dialect>org.hibernate.dialect.MySQL5Dialect</spring.jpa.properties.hibernate.dialect>
             </properties>

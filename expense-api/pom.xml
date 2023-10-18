@@ -40,4 +40,16 @@
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>inmemorydb</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>production</id>
+        </profile>
+    </profiles>
+
 </project>
